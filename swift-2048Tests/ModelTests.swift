@@ -10,6 +10,8 @@ import XCTest
 @testable import swift_2048
 
 class ModelTests: XCTestCase, GameModelProtocol {
+    
+    
 
   override func setUp() {
     super.setUp()
@@ -26,7 +28,7 @@ class ModelTests: XCTestCase, GameModelProtocol {
   func moveOneTile(from: (Int, Int), to: (Int, Int), value: Int) { }
   func moveTwoTiles(from: ((Int, Int), (Int, Int)), to: (Int, Int), value: Int) { }
   func insertTile(at location: (Int, Int), withValue value: Int) { }
-
+    func getScore() -> Int { return 0 }
   // --------- TEST CONDENSE --------- //
 
   func testCondense1() {

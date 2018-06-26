@@ -2,21 +2,21 @@
 //  GameModel.swift
 //  swift-2048
 //
-//  Created by Austin Zheng on 6/3/14.
-//  Copyright (c) 2014 Austin Zheng. Released under the terms of the MIT license.
+//  Created by iwen
 //
 
 import UIKit
 
-/// A protocol that establishes a way for the game model to communicate with its parent view controller.
+/// protocol, 為gamemodel和view controller建立通訊
 protocol GameModelProtocol : class {
   func scoreChanged(to score: Int)
+  func getScore()-> Int
   func moveOneTile(from: (Int, Int), to: (Int, Int), value: Int)
   func moveTwoTiles(from: ((Int, Int), (Int, Int)), to: (Int, Int), value: Int)
   func insertTile(at location: (Int, Int), withValue value: Int)
 }
 
-/// A class representing the game state and game logic for swift-2048. It is owned by a NumberTileGame view controller.
+// 一個代表swift-2048的遊戲狀態和遊戲邏輯的class 它由一個NumberTileGame view controller擁有。
 class GameModel : NSObject {
   let dimension : Int
   let threshold : Int
@@ -24,6 +24,7 @@ class GameModel : NSObject {
   var score : Int = 0 {
     didSet {
       delegate.scoreChanged(to: score)
+        delegate.getScore()
     }
   }
   var gameboard: SquareGameboard<TileObject>
@@ -54,11 +55,10 @@ class GameModel : NSObject {
     timer.invalidate()
   }
 
-  /// Order the game model to perform a move (because the user swiped their finger). The queue enforces a delay of a few
-  /// milliseconds between each move.
+  /// game model執行移動 在每次移動之間執行幾毫秒的延遲。
   func queueMove(direction: MoveDirection, onCompletion: @escaping (Bool) -> ()) {
     guard queue.count <= maxCommands else {
-      // Queue is wedged. This should actually never happen in practice.
+      // 隊列被wedge。 實際上應該不會發生。
       return
     }
     queue.append(MoveCommand(direction: direction, completion: onCompletion))
@@ -70,13 +70,12 @@ class GameModel : NSObject {
 
   //------------------------------------------------------------------------------------------------------------------//
 
-  /// Inform the game model that the move delay timer fired. Once the timer fires, the game model tries to execute a
-  /// single move that changes the game state.
+  /// 通知game model，移動延遲計時器開啟。 一旦定時器啟動，game model就會嘗試執行一個改變遊戲狀態的動作。
   @objc func timerFired(_: Timer) {
     if queue.count == 0 {
       return
     }
-    // Go through the queue until a valid command is run or the queue is empty
+    // check queue直到valid command運行或queue為空
     var changed = false
     while queue.count > 0 {
       let command = queue[0]
@@ -84,7 +83,7 @@ class GameModel : NSObject {
       changed = performMove(direction: command.direction)
       command.completion(changed)
       if changed {
-        // If the command doesn't change anything, we immediately run the next one
+        // 如果command沒有改變任何東西，立即運行下一個command
         break
       }
     }
@@ -100,7 +99,7 @@ class GameModel : NSObject {
 
   //------------------------------------------------------------------------------------------------------------------//
 
-  /// Insert a tile with a given value at a position upon the gameboard.
+  /// 在遊戲板上的某個位置插入一個具有給定值的塊塊
   func insertTile(at location: (Int, Int), value: Int) {
     let (x, y) = location
     if case .empty = gameboard[x, y] {
@@ -109,20 +108,20 @@ class GameModel : NSObject {
     }
   }
 
-  /// Insert a tile with a given value at a random open position upon the gameboard.
+  /// 在遊戲盤上的隨機打開位置插入一個具有給定值的圖塊
   func insertTileAtRandomLocation(withValue value: Int) {
     let openSpots = gameboardEmptySpots()
     if openSpots.isEmpty {
       // No more open spots; don't even bother
       return
     }
-    // Randomly select an open spot, and put a new tile there
+    // 隨機選擇一個開放地點，並在那裡放置一個新的塊塊
     let idx = Int(arc4random_uniform(UInt32(openSpots.count-1)))
     let (x, y) = openSpots[idx]
     insertTile(at: (x, y), value: value)
   }
 
-  /// Return a list of tuples describing the coordinates of empty spots remaining on the gameboard.
+  /// 返回遊戲板上剩餘空點坐標
   func gameboardEmptySpots() -> [(Int, Int)] {
     var buffer : [(Int, Int)] = []
     for i in 0..<dimension {
@@ -161,11 +160,11 @@ class GameModel : NSObject {
 
   func userHasLost() -> Bool {
     guard gameboardEmptySpots().isEmpty else {
-      // Player can't lose before filling up the board
+      // 玩家在填滿棋盤前不能輸
       return false
     }
 
-    // Run through all the tiles and check for possible moves
+    // 貫穿所有塊塊並檢查可能的移動
     for i in 0..<dimension {
       for j in 0..<dimension {
         switch gameboard[i, j] {
@@ -186,7 +185,7 @@ class GameModel : NSObject {
   func userHasWon() -> (Bool, (Int, Int)?) {
     for i in 0..<dimension {
       for j in 0..<dimension {
-        // Look for a tile with the winning score or greater
+        // 尋找獲勝分數或更高的塊塊
         if case let .tile(v) = gameboard[i, j], v >= threshold {
           return (true, (i, j))
         }
@@ -197,11 +196,9 @@ class GameModel : NSObject {
 
   //------------------------------------------------------------------------------------------------------------------//
 
-  // Perform all calculations and update state for a single move.
+  // 執行所有計算並更新一次移動的狀態
   func performMove(direction: MoveDirection) -> Bool {
-    // Prepare the generator closure. This closure differs in behavior depending on the direction of the move. It is
-    // used by the method to generate a list of tiles which should be modified. Depending on the direction this list
-    // may represent a single row or a single column, in either direction.
+    // prepare the generator closure. This closure differs in behavior depending on the direction of the move。 該方法使用它來生成應修改的圖塊列表。 根據不同的方向，這個列表可能代表單行或單列，在任一方向。
     let coordinateGenerator: (Int) -> [(Int, Int)] = { (iteration: Int) -> [(Int, Int)] in
       var buffer = Array<(Int, Int)>(repeating: (0, 0), count: self.dimension)
       for i in 0..<self.dimension {
@@ -217,7 +214,7 @@ class GameModel : NSObject {
 
     var atLeastOneMove = false
     for i in 0..<dimension {
-      // Get the list of coords
+      // 獲取坐標列表
       let coords = coordinateGenerator(i)
 
       // Get the corresponding list of tiles

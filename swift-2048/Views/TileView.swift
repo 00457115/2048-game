@@ -2,14 +2,14 @@
 //  TileView.swift
 //  swift-2048
 //
-//  Created by Austin Zheng on 6/3/14.
-//  Copyright (c) 2014 Austin Zheng. Released under the terms of the MIT license.
+// Created by iwen
 //
 
 import UIKit
 
-/// A view representing a single swift-2048 tile.
+/// 一個塊塊的view
 class TileView : UIView {
+    //塊塊中的值
   var value : Int = 0 {
     didSet {
       backgroundColor = delegate.tileColor(value)
@@ -17,8 +17,10 @@ class TileView : UIView {
       numberLabel.text = "\(value)"
     }
   }
-
+ 
+  //提供顏色選擇
   unowned let delegate : AppearanceProviderProtocol
+  //一個數字塊塊就是一個label
   let numberLabel : UILabel
 
   required init(coder: NSCoder) {

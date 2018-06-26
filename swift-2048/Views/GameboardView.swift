@@ -2,8 +2,7 @@
 //  GameboardView.swift
 //  swift-2048
 //
-//  Created by Austin Zheng on 6/3/14.
-//  Copyright (c) 2014 Austin Zheng. Released under the terms of the MIT license.
+//  Created by iwen
 //
 
 import UIKit
@@ -78,10 +77,11 @@ class GameboardView : UIView {
     }
   }
 
-  /// Update the gameboard by inserting a tile in a given location. The tile will be inserted with a 'pop' animation.
+  /// 通過在給定的位置插入一個塊塊來更新遊戲板。 該塊塊將插入一個'pop'動畫。
   func insertTile(at pos: (Int, Int), value: Int) {
     assert(positionIsValid(pos))
     let (row, col) = pos
+    //取出當前數字塊的左上角座標
     let x = tilePadding + CGFloat(col)*(tileWidth + tilePadding)
     let y = tilePadding + CGFloat(row)*(tileWidth + tilePadding)
     let r = (cornerRadius >= 2) ? cornerRadius - 2 : 0
@@ -106,8 +106,7 @@ class GameboardView : UIView {
     })
   }
 
-  /// Update the gameboard by moving a single tile from one location to another. If the move is going to collapse two
-  /// tiles into a new tile, the tile will 'pop' after moving to its new location.
+  // 通過將單個拼貼從一個位置移動到另一個位置來更新遊戲板。 如果移動要將兩個拼貼合攏到一個新拼貼中，拼貼在移動到新位置後將“pop”。
   func moveOneTile(from: (Int, Int), to: (Int, Int), value: Int) {
     assert(positionIsValid(from) && positionIsValid(to))
     let (fromRow, fromCol) = from
@@ -160,8 +159,7 @@ class GameboardView : UIView {
     })
   }
 
-  /// Update the gameboard by moving two tiles from their original locations to a common destination. This action always
-  /// represents tile collapse, and the combined tile 'pops' after both tiles move into position.
+  /// 通過將兩個貼圖從其原始位置移動到一個通用目標來更新遊戲板。 這個動作總是代表塊塊崩潰，並且在兩個瓦片移動到位後組合瓦片“pop”。
   func moveTwoTiles(from: ((Int, Int), (Int, Int)), to: (Int, Int), value: Int) {
     assert(positionIsValid(from.0) && positionIsValid(from.1) && positionIsValid(to))
     let (fromRowA, fromColA) = from.0

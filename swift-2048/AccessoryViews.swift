@@ -2,17 +2,18 @@
 //  AccessoryViews.swift
 //  swift-2048
 //
-//  Created by Austin Zheng on 6/4/14.
-//  Copyright (c) 2014 Austin Zheng. Released under the terms of the MIT license.
+//  Created by iwen
 //
 
 import UIKit
 
+//protocol的作用是方便有些class中要用score
 protocol ScoreViewProtocol {
   func scoreChanged(to s: Int)
+  func getScore()->Int
 }
 
-/// A simple view that displays the player's score.
+/// 顯示玩家分數的view
 class ScoreView : UIView, ScoreViewProtocol {
   var score : Int = 0 {
     didSet {
@@ -41,10 +42,15 @@ class ScoreView : UIView, ScoreViewProtocol {
   func scoreChanged(to s: Int)  {
     score = s
   }
+    
+    func getScore()->Int  {
+        //print(score)
+        return score
+    }
 }
 
 // A simple view that displays several buttons for controlling the app
-class ControlView {
-  let defaultFrame = CGRect(x: 0, y: 0, width: 140, height: 40)
+//class ControlView {
+  //let defaultFrame = CGRect(x: 0, y: 0, width: 140, height: 40)
   // TODO: Implement me
-}
+//}

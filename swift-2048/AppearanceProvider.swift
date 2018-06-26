@@ -2,18 +2,19 @@
 //  AppearanceProvider.swift
 //  swift-2048
 //
-//  Created by Austin Zheng on 6/3/14.
-//  Copyright (c) 2014 Austin Zheng. Released under the terms of the MIT license.
+//  Created by iwen
 //
 
 import UIKit
 
+//只宣告不實做
 protocol AppearanceProviderProtocol: class {
   func tileColor(_ value: Int) -> UIColor
   func numberColor(_ value: Int) -> UIColor
   func fontForNumbers() -> UIFont
 }
 
+//定義了一些顏色，可以根據數字來取不同的顏色
 class AppearanceProvider: AppearanceProviderProtocol {
 
   // Provide a tile color for a given value
